@@ -1,0 +1,9 @@
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"> 
+  <modelVersion>4.0.0</modelVersion> 
+  <groupId>overtone</groupId> 
+  <artifactId>scsynth-jna</artifactId> 
+  <version>3.3.1</version> 
+  <name>scsynth-jna</name> 
+  <description>scsynth-jna native libs</description> 
+</project> 
