@@ -27,6 +27,7 @@ struct JnaStartOptions
 extern "C" {
 	SC_DLLEXPORT World* ScJnaStart(JnaStartOptions *inOptions);
 	SC_DLLEXPORT void ScJnaCleanup();
+        SC_DLLEXPORT struct SndBuf * ScJnaCopySndBuf(World *world, uint32 index);
 }
 
 #endif // _SCSYNTH_JNA__

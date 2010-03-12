@@ -15,6 +15,7 @@
 #include <sys/wait.h>
 #endif
 
+#include "SC_SndBuf.h"
 
 #ifdef SC_WIN32
 
@@ -27,6 +28,17 @@ inline int setlinebuf(FILE *stream)
 
 #endif
 
+
+struct SndBuf * ScJnaCopySndBuf(World *world, uint32 index)
+{
+	bool didChange;
+	SndBuf buf;
+        memset(&buf, 0, sizeof(SndBuf));
+	int serverErr = World_CopySndBuf(world, index, &buf, false, didChange);
+	return &buf;
+}
+
+// TODO: free sndbuf function
 
 World* ScJnaStart(JnaStartOptions *inOptions)
 {
