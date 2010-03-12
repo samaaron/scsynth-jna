@@ -1,0 +1,14 @@
+#!/bin/bash
+
+scons 
+
+ARCH=`uname -m`
+if [ "$ARCH" == "x86_64" ]; then
+	cp src/libscsynth-jna.so native/linux/x86_64
+else
+	cp src/libscsynth-jna.so native/linux/x86
+fi
+
+zip -r scsynth-jna-3.3.1.jar native
+
+mvn install:install-file -DgroupId=overtone -DartifactId=scsynth-jna -Dversion=3.3.1 -Dfile=scsynth-jna-3.3.1.jar -Dpackaging=jar -DgeneratePom=true
