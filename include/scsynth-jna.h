@@ -21,6 +21,7 @@ struct JnaStartOptions
 	int32 udpPortNum;
 	int32 tcpPortNum;
 	int32 verbosity;
+        const char* libScSynthPath;
         const char* UGensPluginPath;
 };
 
