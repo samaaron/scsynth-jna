@@ -1,0 +1,11 @@
+#!/bin/bash
+ 
+ARCH=`uname -m`
+if [ "$ARCH" == "x86_64" ]; then
+	cp src/libscsynth-jna.so native/linux/x86_64
+else
+	cp src/libscsynth-jna.so native/linux/x86
+fi
+
+zip -r scsynth-jna-3.3.1.jar native
+scp pom.xml scsynth-jna-3.3.1.jar clojars@clojars.org: 
