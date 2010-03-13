@@ -1,7 +1,6 @@
 #include "SC_WorldOptions.h"
 #include "scsynth-jna.h"
 
-
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -12,10 +11,24 @@
 #include <pthread.h>
 #include <winsock2.h>
 #else
+#include <dlfcn.h>
 #include <sys/wait.h>
 #endif
 
 #include "SC_SndBuf.h"
+
+
+void (*dyn_SetPrintFunc)(PrintFunc);
+struct World* (*dyn_World_New)(WorldOptions *);
+void (*dyn_World_Cleanup)(World *);
+void (*dyn_World_NonRealTimeSynthesis)(struct World *, WorldOptions *);
+int (*dyn_World_OpenUDP)(struct World *, int );
+int (*dyn_World_OpenTCP)(struct World *, int , int , int );
+void (*dyn_World_WaitForQuit)(struct World *);
+bool (*dyn_World_SendPacket)(struct World *, int , char *, ReplyFunc );
+bool (*dyn_World_SendPacketWithContext)(struct World *, int , char *, ReplyFunc , void *);
+int (*dyn_World_CopySndBuf)(World *, uint32 , struct SndBuf *, bool , bool &);
+int (*dyn_scprintf)(const char *, ...);
 
 #ifdef SC_WIN32
 
@@ -28,21 +41,59 @@ inline int setlinebuf(FILE *stream)
 
 #endif
 
-
 struct SndBuf * ScJnaCopySndBuf(World *world, uint32 index)
 {
 	bool didChange;
-	SndBuf buf;
-        memset(&buf, 0, sizeof(SndBuf));
-	int serverErr = World_CopySndBuf(world, index, &buf, false, didChange);
-	return &buf;
+	struct SndBuf* buf = (struct SndBuf*) malloc(sizeof(struct SndBuf));
+        memset(buf, 0, sizeof(struct SndBuf));
+	int serverErr = dyn_World_CopySndBuf(world, index, buf, false, didChange);
+	return buf;
 }
 
+
+
 // TODO: free sndbuf function
+
+void* scsynth_library;
 
 World* ScJnaStart(JnaStartOptions *inOptions)
 {
     setlinebuf(stdout);
+
+#ifndef SC_WIN32
+    scsynth_library = dlopen(inOptions->libScSynthPath, RTLD_LAZY);
+    if(scsynth_library == NULL) {
+	    if(inOptions->verbosity >=0)
+	    {
+               fprintf (stderr, "dlopen failed %s\n", inOptions->libScSynthPath);
+            }
+	    return 0;
+    }
+
+    dlerror();
+
+    dyn_SetPrintFunc =                (void (*)(PrintFunc))                                         dlsym(scsynth_library, "SetPrintFunc");
+    dyn_World_New =                   (struct World* (*)(WorldOptions *))                           dlsym(scsynth_library, "World_New");
+    dyn_World_Cleanup =               (void (*)(World *))                                           dlsym(scsynth_library, "World_Cleanup");
+    dyn_World_NonRealTimeSynthesis =  (void (*)(struct World *, WorldOptions *))                    dlsym(scsynth_library, "World_NonRealTimeSynthesis");
+    dyn_World_OpenUDP =               (int (*)(struct World *, int ))                               dlsym(scsynth_library, "World_OpenUDP");
+    dyn_World_OpenTCP =               (int (*)(struct World *, int , int , int ))                   dlsym(scsynth_library, "World_OpenTCP");
+    dyn_World_WaitForQuit =           (void (*)(struct World *))                                    dlsym(scsynth_library, "World_WaitForQuit");
+    dyn_World_SendPacket =            (bool (*)(struct World *, int , char *, ReplyFunc ))          dlsym(scsynth_library, "World_SendPacket");
+    dyn_World_SendPacketWithContext = (bool (*)(struct World *, int , char *, ReplyFunc , void *))  dlsym(scsynth_library, "World_SendPacketWithContext");
+    dyn_World_CopySndBuf =            (int (*)(World *, uint32 , struct SndBuf *, bool , bool &))   dlsym(scsynth_library, "World_CopySndBuf");
+    dyn_scprintf =                    (int (*)(const char *, ...))                                  dlsym(scsynth_library, "scprintf");
+
+    char *error;
+    if ((error = dlerror()) != NULL)  {
+        if(inOptions->verbosity >=0)
+        {
+	    fprintf (stderr, "%s\n", error);
+        }
+        return 0;
+    }
+    
+#endif
 
 #ifdef SC_WIN32
 #ifdef SC_WIN32_STATIC_PTHREADS
@@ -54,7 +105,7 @@ World* ScJnaStart(JnaStartOptions *inOptions)
     WSAData wsaData;
 	int nCode;
     if ((nCode = WSAStartup(MAKEWORD(1, 1), &wsaData)) != 0) {
-		scprintf( "WSAStartup() failed with error code %d.\n", nCode );
+		dyn_scprintf( "WSAStartup() failed with error code %d.\n", nCode );
         return 0;
     }
 #endif
@@ -66,7 +117,8 @@ World* ScJnaStart(JnaStartOptions *inOptions)
 	
 	options.mVerbosity = inOptions->verbosity;
         options.mUGensPluginPath = inOptions->UGensPluginPath;
-	struct World *world = World_New(&options);
+
+	struct World *world = dyn_World_New(&options);
 	if (!world) return 0;
 
 	/*
@@ -82,24 +134,24 @@ World* ScJnaStart(JnaStartOptions *inOptions)
 	*/
 
 	if (udpPortNum >= 0) {
-		if (!World_OpenUDP(world, udpPortNum)) {
-			World_Cleanup(world);
+		if (!dyn_World_OpenUDP(world, udpPortNum)) {
+			dyn_World_Cleanup(world);
 			return 0;
 		}
 	}
 	if (tcpPortNum >= 0) {
-		if (!World_OpenTCP(world, tcpPortNum, options.mMaxLogins, 8)) {
-			World_Cleanup(world);
+		if (!dyn_World_OpenTCP(world, tcpPortNum, options.mMaxLogins, 8)) {
+			dyn_World_Cleanup(world);
 			return 0;
 		}
 	}
 
 #ifdef SC_DARWIN
-    //World_OpenMachPorts(world, options.mServerPortName, options.mReplyPortName);
+    //dyn_World_OpenMachPorts(world, options.mServerPortName, options.mReplyPortName);
 #endif
 	
 	if(options.mVerbosity >=0){
-		scprintf("SuperCollider 3 server ready..\n");
+		dyn_scprintf("SuperCollider 3 server ready..\n");
 	}
 	fflush(stdout);
 	
@@ -116,5 +168,8 @@ void ScJnaCleanup()
     // clean up statically linked pthreads
     pthread_win32_process_detach_np();
 #endif
+#endif
+#ifndef SC_WIN32
+    dlclose(scsynth_library);
 #endif
 }
