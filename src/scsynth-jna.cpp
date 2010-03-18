@@ -51,16 +51,52 @@ struct SndBuf * ScJnaCopySndBuf(World *world, uint32 index)
 }
 
 
-
-// TODO: free sndbuf function
-
+#ifdef SC_WIN32
+HINSTANCE scsynth_library;
+#else
 void* scsynth_library;
+#endif
+// TODO: free sndbuf function
 
 World* ScJnaStart(JnaStartOptions *inOptions)
 {
     setlinebuf(stdout);
 
-#ifndef SC_WIN32
+#ifdef SC_WIN32
+
+    scsynth_library = LoadLibrary( inOptions->libScSynthPath );
+    if (!scsynth_library) 
+      {
+	    if(inOptions->verbosity >=0)
+	    {
+               fprintf (stderr, "loading library failed %s\n", inOptions->libScSynthPath);
+            }
+	    return 0;        
+      }
+
+    dyn_SetPrintFunc =                (void (*)(PrintFunc))                                         GetProcAddress(scsynth_library, "SetPrintFunc");
+    dyn_World_New =                   (struct World* (*)(WorldOptions *))                           GetProcAddress(scsynth_library, "World_New");
+    dyn_World_Cleanup =               (void (*)(World *))                                           GetProcAddress(scsynth_library, "World_Cleanup");
+    dyn_World_NonRealTimeSynthesis =  (void (*)(struct World *, WorldOptions *))                    GetProcAddress(scsynth_library, "World_NonRealTimeSynthesis");
+    dyn_World_OpenUDP =               (int (*)(struct World *, int ))                               GetProcAddress(scsynth_library, "World_OpenUDP");
+    dyn_World_OpenTCP =               (int (*)(struct World *, int , int , int ))                   GetProcAddress(scsynth_library, "World_OpenTCP");
+    dyn_World_WaitForQuit =           (void (*)(struct World *))                                    GetProcAddress(scsynth_library, "World_WaitForQuit");
+    dyn_World_SendPacket =            (bool (*)(struct World *, int , char *, ReplyFunc ))          GetProcAddress(scsynth_library, "World_SendPacket");
+    dyn_World_SendPacketWithContext = (bool (*)(struct World *, int , char *, ReplyFunc , void *))  GetProcAddress(scsynth_library, "World_SendPacketWithContext");
+    dyn_World_CopySndBuf =            (int (*)(World *, uint32 , struct SndBuf *, bool , bool &))   GetProcAddress(scsynth_library, "World_CopySndBuf");
+    dyn_scprintf =                    (int (*)(const char *, ...))                                  GetProcAddress(scsynth_library, "scprintf");
+
+    if (!dyn_scprintf) 
+    {
+      if(inOptions->verbosity >=0)
+        {
+          fprintf (stderr, "loading scsynth functions library failed\n");
+        }
+      return 0;
+    }
+
+#else
+   
     scsynth_library = dlopen(inOptions->libScSynthPath, RTLD_LAZY);
     if(scsynth_library == NULL) {
 	    if(inOptions->verbosity >=0)
@@ -169,7 +205,9 @@ void ScJnaCleanup()
     pthread_win32_process_detach_np();
 #endif
 #endif
-#ifndef SC_WIN32
+#ifdef SC_WIN32
+    FreeLibrary(scsynth_library);
+#else
     dlclose(scsynth_library);
 #endif
 }
