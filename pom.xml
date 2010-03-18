@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion> 
   <groupId>overtone</groupId> 
   <artifactId>scsynth-jna</artifactId> 
-  <version>3.3.1</version> 
+  <version>3.3.1-SNAPSHOT</version> 
   <name>scsynth-jna</name> 
   <description>scsynth-jna native libs</description> 
 </project> 
