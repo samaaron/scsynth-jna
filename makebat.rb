@@ -3,7 +3,7 @@
 # mozinator.eu
 
 arch = 'x86_64'
-debug = false
+debug = true
 
 scsynth_source_files = <<EOF
 ../supercollider/common/source/server/Samp.cpp
@@ -325,6 +325,19 @@ ugens.keys.each do |k|
 
   file.puts "link " + link_opts + " /OUT:#{k}.scx /DLL " + libs.map { |i| i + " " }.to_s \
                     + ugens[k]["sources"].map { |i| i.split('/').last.split('.').first + ".obj " }.to_s
+end
+
+if arch == 'x86_64'
+  file.puts 'copy /y scsynth_jna.dll src\main\resources\supercollider\windows\x86_64'
+  file.puts 'copy /y *.scx src\main\resources\supercollider\windows\x86_64'
+  file.puts 'copy /y ..\supercollider\windows\lib64\libsndfile\*.dll src\main\resources\supercollider\windows\x86_64'
+  file.puts 'copy /y ..\supercollider\windows\lib64\fftw3\*.dll src\main\resources\supercollider\windows\x86_64'
+end
+if arch == 'x86'
+  file.puts 'copy /y scsynth_jna.dll src\main\resources\supercollider\windows\x86'
+  file.puts 'copy /y *.scx src\main\resources\supercollider\windows\x86'
+  file.puts 'copy /y ..\supercollider\windows\lib64\libsndfile\*.dll src\main\resources\supercollider\windows\x86'
+  file.puts 'copy /y ..\supercollider\windows\lib64\fftw3\*.dll src\main\resources\supercollider\windows\x86'
 end
 
 file.close
