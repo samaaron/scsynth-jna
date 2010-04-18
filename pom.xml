@@ -3,7 +3,40 @@
   <modelVersion>4.0.0</modelVersion> 
   <groupId>overtone</groupId> 
   <artifactId>scsynth-jna</artifactId> 
-  <version>3.3.1-SNAPSHOT</version> 
+  <version>3-SNAPSHOT</version> 
   <name>scsynth-jna</name> 
-  <description>scsynth-jna native libs</description> 
+
+  <repositories>
+    <repository>
+      <id>clojars.org</id>
+      <url>http://clojars.org/repo</url>
+    </repository>
+  </repositories>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+        <source>1.6</source>
+        <target>1.6</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.clojars.bagucode</groupId>
+      <artifactId>jna</artifactId>
+      <version>3.2.4</version>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.7</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 </project> 
