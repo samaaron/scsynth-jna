@@ -1,4 +1,0 @@
-#!/bin/bash
- 
-zip -r scsynth-jna-3.3.1-SNAPSHOT.jar native
-scp pom.xml scsynth-jna-3.3.1-SNAPSHOT.jar clojars@clojars.org: 
