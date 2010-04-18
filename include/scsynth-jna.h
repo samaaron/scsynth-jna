@@ -16,19 +16,17 @@
 # define SC_DLLEXPORT
 #endif
 
-struct JnaStartOptions
+struct ScsynthJnaStartOptions
 {
-	int32 udpPortNum;
-	int32 tcpPortNum;
 	int32 verbosity;
-        const char* libScSynthPath;
-        const char* UGensPluginPath;
+  const char* UGensPluginPath;
 };
 
 extern "C" {
-	SC_DLLEXPORT World* ScJnaStart(JnaStartOptions *inOptions);
-	SC_DLLEXPORT void ScJnaCleanup();
-        SC_DLLEXPORT struct SndBuf * ScJnaCopySndBuf(World *world, uint32 index);
+	SC_DLLEXPORT int scsynth_jna_init();
+  SC_DLLEXPORT World* scsynth_jna_start(ScsynthJnaStartOptions *options);	  
+  SC_DLLEXPORT void scsynth_jna_cleanup();
+  SC_DLLEXPORT struct SndBuf * scsynth_jna_copy_sndbuf(World *world, uint32 index);
 }
 
 #endif // _SCSYNTH_JNA__
