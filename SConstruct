@@ -51,7 +51,7 @@ env.Append(CPPDEFINES={'NOVA_SIMD' : '1',
                        'NDEBUG' : '1',
 		       '_REENTRANT' : '1',
                        'HAVE_STRTOD' : '1',
-                       'SC_MEMORY_ALIGNMENT' : '16',
+                       'SC_MEMORY_ALIGNMENT' : '8',
                        'SC_AUDIO_API' : 'SC_AUDIO_API_JACK',
                        'HAVE_ALSA' : '1'})
 
