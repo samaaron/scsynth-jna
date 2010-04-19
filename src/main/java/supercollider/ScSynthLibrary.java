@@ -56,8 +56,8 @@ public class ScSynthLibrary {
             if (tempDir.exists() == false) {
                 tempDir.mkdir();
             }
-
             tempDir.deleteOnExit();
+            
             File tempUgensDir = new File(tempDir.getPath() + File.separator + "ugens");
             if (tempUgensDir.exists() == false) {
                 tempUgensDir.mkdir();
