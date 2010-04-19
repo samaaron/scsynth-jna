@@ -44,7 +44,7 @@ public class ScSynth implements Runnable {
             }
         }
     };
-    ArrayList<MessageReceivedListener> messageListeners = new ArrayList<MessageReceivedListener>();
+    ArrayList<MessageReceivedListener> messageListeners;
 
     public void addMessageReceivedListener(MessageReceivedListener listener) {
         if (listener == null) {
