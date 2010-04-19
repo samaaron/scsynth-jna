@@ -2,6 +2,7 @@ package supercollider;
 
 import com.sun.jna.Pointer;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import supercollider.ScSynthLibrary.ReplyCallback;
 import supercollider.ScSynthLibrary.ScsynthJnaStartOptions;
 import supercollider.ScSynthLibrary.SndBuf;
@@ -36,11 +37,35 @@ public class ScSynth implements Runnable {
         }
     }
     private ReplyCallback globalReplyCallback = new ReplyCallback() {
+
         @Override
         public void callback(Pointer addr, Pointer buf, int size) {
             ByteBuffer b = buf.getByteBuffer(0, size);
+            for (MessageReceivedListener l : messageListeners) {
+                l.messageReceived(b, size);
+            }
         }
     };
+    ArrayList<MessageReceivedListener> messageListeners;
+
+    public void addMessageReceivedListener(MessageReceivedListener listener) {
+        if (listener == null) {
+            throw new IllegalArgumentException("null listener");
+        }
+        if (messageListeners == null) {
+            messageListeners = new ArrayList<MessageReceivedListener>(1);
+        }
+        messageListeners.add(listener);
+    }
+
+    public void removeMessageReceivedListener(MessageReceivedListener listener) {
+        if (listener == null) {
+            throw new IllegalArgumentException("null listener");
+        }
+        if (messageListeners != null) {
+            messageListeners.remove(listener);
+        }
+    }
 
     public void send(ByteBuffer b) {
         if (running) {
