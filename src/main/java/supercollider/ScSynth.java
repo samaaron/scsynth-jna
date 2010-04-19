@@ -3,9 +3,6 @@ package supercollider;
 import com.sun.jna.Pointer;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import supercollider.ScSynthLibrary.ReplyCallback;
-import supercollider.ScSynthLibrary.ScsynthJnaStartOptions;
-import supercollider.ScSynthLibrary.SndBuf;
 
 public class ScSynth implements Runnable {
 
@@ -29,6 +26,7 @@ public class ScSynth implements Runnable {
         if (!running) {
             ScSynthLibrary.scsynth_jna_init();
             ScsynthJnaStartOptions.ByReference o = new ScsynthJnaStartOptions.ByReference();
+            o.UGensPluginPath = ScSynthLibrary.getSynthdefsPath();
             world = ScSynthLibrary.scsynth_jna_start(o);
             running = true;
             ScSynthLibrary.World_WaitForQuit(world);
@@ -46,7 +44,7 @@ public class ScSynth implements Runnable {
             }
         }
     };
-    ArrayList<MessageReceivedListener> messageListeners;
+    ArrayList<MessageReceivedListener> messageListeners = new ArrayList<MessageReceivedListener>();
 
     public void addMessageReceivedListener(MessageReceivedListener listener) {
         if (listener == null) {
@@ -82,6 +80,7 @@ public class ScSynth implements Runnable {
     }
 
     public static void main(String[] args) {
-        (new Thread(new ScSynth())).start();
+//        ScSynth sc = new ScSynth();
+//        (new Thread(sc)).start();
     }
 }

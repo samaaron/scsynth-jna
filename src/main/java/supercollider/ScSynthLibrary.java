@@ -2,46 +2,98 @@ package supercollider;
 
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
-import com.sun.jna.Structure;
-import com.sun.jna.win32.StdCallLibrary.StdCallCallback;
 import java.io.File;
-import java.io.IOException;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.Random;
 
 public class ScSynthLibrary {
 
+    public static String getSynthdefsPath() {
+        return synthdefsDir;
+    }
+
+    public static String getScSynthJnaPath() {
+        return scsynthJnaDir;
+    }
+    private static String synthdefsDir = "";
+    private static String scsynthJnaDir = "";
+
     static {
-        System.setProperty("jna.library.path", ScSynthLibrary.class.getResource(getScSynthLocation()).getPath());
-        Native.register("scsynth_jna");
-    }
+        try {
 
-    public interface ReplyCallback extends StdCallCallback {
+            final String baseTempPath = System.getProperty("java.io.tmpdir");
 
-        void callback(Pointer a, Pointer b, int c);
-    }
+            Random rand = new Random();
+            int randomInt = 100000 + rand.nextInt(899999);
 
-    public static class SndBuf extends Structure {
+            File tempDir = new File(baseTempPath + File.separator + "scsynth_jna" + randomInt);
+            if (tempDir.exists() == false) {
+                tempDir.mkdir();
+            }
 
-        public double samplerate;
-        public double sampledur;
-        public Pointer data;
-        public int channels;
-        public int samples;
-        public int frames;
-        public int mask;
-        public int mask1;
-        public int coord;
-        public Pointer sndfile;
-    }
+            tempDir.deleteOnExit();
+            File tempSynthdefsDir = new File(tempDir.getPath() + File.separator + "synthdefs");
+            if (tempSynthdefsDir.exists() == false) {
+                tempSynthdefsDir.mkdir();
+            }
+            tempSynthdefsDir.deleteOnExit();
 
-    public static class ScsynthJnaStartOptions extends Structure {
+            {
+                String fn = ScSynthLibrary.getScSynthJna();
+                URL res = ScSynthLibrary.class.getResource(ScSynthLibrary.getScSynthJnaLocation() + "/" + fn);
 
-        public static class ByReference extends ScsynthJnaStartOptions implements Structure.ByReference {
+                InputStream is = res.openStream();
+                File lib = new File(tempDir.getPath() + File.separator + fn);
+                FileOutputStream fos = new FileOutputStream(lib);
+
+                /* Copy the DLL fro the JAR to the filesystem */
+                byte[] array = new byte[1024];
+                for (int i = is.read(array);
+                        i != -1;
+                        i = is.read(array)) {
+                    fos.write(array, 0, i);
+                }
+                fos.close();
+                is.close();
+                lib.deleteOnExit();
+
+
+            }
+            // Copy synthdefs to temp dir
+            for (String fn : ScSynthLibrary.getScSynthDefs()) {
+                URL res = ScSynthLibrary.class.getResource(ScSynthLibrary.getScSynthdefsLocation() + "/" + fn);
+
+                InputStream is = res.openStream();
+                File ugen = new File(tempSynthdefsDir.getPath() + File.separator + fn);
+                FileOutputStream fos = new FileOutputStream(ugen);
+                
+                /* Copy the DLL fro the JAR to the filesystem */
+                byte[] array = new byte[1024];
+                for (int i = is.read(array);
+                        i != -1;
+                        i = is.read(array)) {
+                    fos.write(array, 0, i);
+                }
+                fos.close();
+                is.close();
+                ugen.deleteOnExit();
+
+            }
+
+            scsynthJnaDir = tempDir.getPath();
+            synthdefsDir = tempSynthdefsDir.getPath();
+
+            System.out.println("path: " + tempDir.getPath());
+
+            System.setProperty("jna.library.path", tempDir.getPath());
+            Native.register("scsynth_jna");
+        } catch (Throwable e) {
+            e.printStackTrace();
         }
-
-        public int verbosity = 1;
-        public String UGensPluginPath = getScSynthDefsCanonicalPath();
     }
 
     public static native int scsynth_jna_init();
@@ -64,31 +116,53 @@ public class ScSynthLibrary {
 
     public static native void World_WaitForQuit(Pointer world);
 
-    private static String getScSynthDefsCanonicalPath() {
+    private static String getScSynthdefsLocation() {
+        return getScSynthJnaLocation() + "/synthdefs";
+    }
+
+    private static String[] getScSynthDefs() {
+
+        if (getOsName().equals("linux")) {
+            return new String[]{
+                        "BinaryOpUGens.so",
+                        "GendynUGens.so", "PanUGens.so",
+                        "ChaosUGens.so", "GrainUGens.so", "PhysicalModelingUGens.so",
+                        "DelayUGens.so", "IOUGens.so", "PV_ThirdParty.so",
+                        "DemandUGens.so", "LFUGens.so", "ReverbUGens.so",
+                        "DiskIO_UGens.so", "ML_UGens.so", "TestUGens.so",
+                        "DynNoiseUGens.so", "MulAddUGens.so", "TriggerUGens.so",
+                        "FFT_UGens.so", "NoiseUGens.so", "UnaryOpUGens.so",
+                        "FilterUGens.so", "OscUGens.so", "UnpackFFTUGens.so"};
+        } else if (getOsName().equals("windows")) {
+        } else if (getOsName().equals("macosx")) {
+        }
+
+        return null;
+    }
+
+    private static String getScSynthJna() {
         String retval = "";
-        try {
-            if (System.getProperty("os.name").indexOf("Windows") == 0) {
-                retval = new File(ScSynthLibrary.class.getResource(getScSynthLocation() ).getPath()).getCanonicalPath();
-            } else {
-                retval = new File(ScSynthLibrary.class.getResource(getScSynthLocation() + "/synthdefs").getPath()).getCanonicalPath();
-            }
-        } catch (IOException ex) {
+        if (getOsName().equals("linux")) {
+            retval = "libscsynth_jna.so";
+        } else if (getOsName().equals("windows")) {
+            retval = "";
+        } else if (getOsName().equals("macosx")) {
+            retval = "";
         }
         return retval;
     }
 
-    private static String getScSynthLocation() {
+    private static String getScSynthJnaLocation() {
+        return "/supercollider/scsynth/" + getOsName() + "/" + getOsArch();
+    }
+
+    private static String getOsName() {
         HashMap<String, String> nativeNames = new HashMap<String, String>();
         nativeNames.put("Mac OS X", "macosx");
         nativeNames.put("Windows", "windows");
         nativeNames.put("Linux", "linux");
-        nativeNames.put("amd64", "x86_64");
-        nativeNames.put("x86_64", "x86_64");
-        nativeNames.put("x86", "x86");
-        nativeNames.put("i386", "x86");
 
         String name = System.getProperty("os.name");
-        String arch = System.getProperty("os.arch");
 
         String nname = "";
         for (String key : nativeNames.keySet()) {
@@ -97,6 +171,19 @@ public class ScSynthLibrary {
                 break;
             }
         }
+
+        return nname;
+    }
+
+    private static String getOsArch() {
+        HashMap<String, String> nativeNames = new HashMap<String, String>();
+        nativeNames.put("amd64", "x86_64");
+        nativeNames.put("x86_64", "x86_64");
+        nativeNames.put("x86", "x86");
+        nativeNames.put("i386", "x86");
+
+        String arch = System.getProperty("os.arch");
+
         String narch = "";
         for (String key : nativeNames.keySet()) {
             if (arch.indexOf(key) >= 0) {
@@ -105,6 +192,6 @@ public class ScSynthLibrary {
             }
         }
 
-        return "/supercollider/scsynth/" + nname + "/" + narch;
+        return narch;
     }
 }
