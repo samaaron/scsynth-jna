@@ -8,15 +8,6 @@ import supercollider.ScSynthLibrary.SndBuf;
 
 public class ScSynth implements Runnable {
 
-    public ScSynth() {
-        ScSynthLibrary.scsynth_jna_init();
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        ScSynthLibrary.scsynth_jna_cleanup();
-        super.finalize();
-    }
     private Pointer world = Pointer.NULL;
 
     public void openUdp(int port) {
@@ -35,15 +26,16 @@ public class ScSynth implements Runnable {
     @Override
     public void run() {
         if (!running) {
+            ScSynthLibrary.scsynth_jna_init();
             ScsynthJnaStartOptions.ByReference o = new ScsynthJnaStartOptions.ByReference();
             world = ScSynthLibrary.scsynth_jna_start(o);
             running = true;
             ScSynthLibrary.World_WaitForQuit(world);
+            ScSynthLibrary.scsynth_jna_cleanup();
             running = false;
         }
     }
     private ReplyCallback globalReplyCallback = new ReplyCallback() {
-
         @Override
         public void callback(Pointer addr, Pointer buf, int size) {
             ByteBuffer b = buf.getByteBuffer(0, size);
