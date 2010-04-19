@@ -3,3 +3,5 @@ target
 scsynth_jna.dll
 scsynth_jna.exp
 scsynth_jna.lib
+libscsynth_jna.so
+src/scsynth-jna.os
