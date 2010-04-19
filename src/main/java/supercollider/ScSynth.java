@@ -26,7 +26,7 @@ public class ScSynth implements Runnable {
         if (!running) {
             ScSynthLibrary.scsynth_jna_init();
             ScsynthJnaStartOptions.ByReference o = new ScsynthJnaStartOptions.ByReference();
-            o.UGensPluginPath = ScSynthLibrary.getSynthdefsPath();
+            o.UGensPluginPath = ScSynthLibrary.getUgensPath();
             world = ScSynthLibrary.scsynth_jna_start(o);
             running = true;
             ScSynthLibrary.World_WaitForQuit(world);
@@ -80,7 +80,7 @@ public class ScSynth implements Runnable {
     }
 
     public static void main(String[] args) {
-//        ScSynth sc = new ScSynth();
-//        (new Thread(sc)).start();
+        ScSynth sc = new ScSynth();
+        (new Thread(sc)).start();
     }
 }

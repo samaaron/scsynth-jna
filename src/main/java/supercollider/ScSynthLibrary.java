@@ -4,6 +4,7 @@ import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -12,15 +13,36 @@ import java.util.Random;
 
 public class ScSynthLibrary {
 
-    public static String getSynthdefsPath() {
-        return synthdefsDir;
+    public static String getUgensPath() {
+        return ugensDir;
     }
 
-    public static String getScSynthJnaPath() {
-        return scsynthJnaDir;
+    public static String getScSynthPath() {
+        return scsynthDir;
     }
-    private static String synthdefsDir = "";
-    private static String scsynthJnaDir = "";
+    private static String ugensDir = "";
+    private static String scsynthDir = "";
+
+    private static File copyResourceToFS(String resourcePath, String targetFsLocation) throws IOException {
+
+        URL res = ScSynthLibrary.class.getResource(resourcePath);
+
+        InputStream is = res.openStream();
+        File file = new File(targetFsLocation);
+        FileOutputStream fos = new FileOutputStream(file);
+
+        /* Copy the DLL fro the JAR to the filesystem */
+        byte[] array = new byte[1024];
+        for (int i = is.read(array);
+                i != -1;
+                i = is.read(array)) {
+            fos.write(array, 0, i);
+        }
+        fos.close();
+        is.close();
+
+        return file;
+    }
 
     static {
         try {
@@ -36,58 +58,40 @@ public class ScSynthLibrary {
             }
 
             tempDir.deleteOnExit();
-            File tempSynthdefsDir = new File(tempDir.getPath() + File.separator + "synthdefs");
-            if (tempSynthdefsDir.exists() == false) {
-                tempSynthdefsDir.mkdir();
+            File tempUgensDir = new File(tempDir.getPath() + File.separator + "ugens");
+            if (tempUgensDir.exists() == false) {
+                tempUgensDir.mkdir();
             }
-            tempSynthdefsDir.deleteOnExit();
+            tempUgensDir.deleteOnExit();
 
+            // Copy scsynth to temp dir
             {
-                String fn = ScSynthLibrary.getScSynthJna();
-                URL res = ScSynthLibrary.class.getResource(ScSynthLibrary.getScSynthJnaLocation() + "/" + fn);
-
-                InputStream is = res.openStream();
-                File lib = new File(tempDir.getPath() + File.separator + fn);
-                FileOutputStream fos = new FileOutputStream(lib);
-
-                /* Copy the DLL fro the JAR to the filesystem */
-                byte[] array = new byte[1024];
-                for (int i = is.read(array);
-                        i != -1;
-                        i = is.read(array)) {
-                    fos.write(array, 0, i);
-                }
-                fos.close();
-                is.close();
+                String fn = ScSynthLibrary.getScSynth();
+                String source = ScSynthLibrary.getScSynthLocation() + "/" + fn;
+                String target = tempDir.getPath() + File.separator + fn;
+                File lib = copyResourceToFS(source, target);
                 lib.deleteOnExit();
-
-
             }
-            // Copy synthdefs to temp dir
-            for (String fn : ScSynthLibrary.getScSynthDefs()) {
-                URL res = ScSynthLibrary.class.getResource(ScSynthLibrary.getScSynthdefsLocation() + "/" + fn);
 
-                InputStream is = res.openStream();
-                File ugen = new File(tempSynthdefsDir.getPath() + File.separator + fn);
-                FileOutputStream fos = new FileOutputStream(ugen);
-                
-                /* Copy the DLL fro the JAR to the filesystem */
-                byte[] array = new byte[1024];
-                for (int i = is.read(array);
-                        i != -1;
-                        i = is.read(array)) {
-                    fos.write(array, 0, i);
-                }
-                fos.close();
-                is.close();
+            // Copy scsynth dependencies to temp dir
+            for (String fn : ScSynthLibrary.getScSynthDependencies()) {
+                String source = ScSynthLibrary.getScSynthLocation() + "/" + fn;
+                String target = tempDir.getPath() + File.separator + fn;
+                File lib = copyResourceToFS(source, target);
+                lib.deleteOnExit();
+            }
+
+            // Copy ugens to temp dir
+            for (String fn : ScSynthLibrary.getUgens()) {
+                String source = ScSynthLibrary.getUgensLocation() + "/" + fn;
+                String target = tempUgensDir.getPath() + File.separator + fn;
+                File ugen = copyResourceToFS(source, target);
                 ugen.deleteOnExit();
-
             }
+           
 
-            scsynthJnaDir = tempDir.getPath();
-            synthdefsDir = tempSynthdefsDir.getPath();
-
-            System.out.println("path: " + tempDir.getPath());
+            scsynthDir = tempDir.getPath();
+            ugensDir = tempUgensDir.getPath();
 
             System.setProperty("jna.library.path", tempDir.getPath());
             Native.register("scsynth_jna");
@@ -116,11 +120,18 @@ public class ScSynthLibrary {
 
     public static native void World_WaitForQuit(Pointer world);
 
-    private static String getScSynthdefsLocation() {
-        return getScSynthJnaLocation() + "/synthdefs";
+    private static String getUgensLocation() {
+        return getScSynthLocation() + "/ugens";
     }
 
-    private static String[] getScSynthDefs() {
+    private static String[] getScSynthDependencies() {
+        if (getOsName().equals("windows")) {
+            return new String[]{"libsndfile-1.dll"};
+        }
+        return new String[]{};
+    }
+
+    private static String[] getUgens() {
 
         if (getOsName().equals("linux")) {
             return new String[]{
@@ -134,25 +145,36 @@ public class ScSynthLibrary {
                         "FFT_UGens.so", "NoiseUGens.so", "UnaryOpUGens.so",
                         "FilterUGens.so", "OscUGens.so", "UnpackFFTUGens.so"};
         } else if (getOsName().equals("windows")) {
+            return new String[]{
+                        "BinaryOpUGens.scx", "ChaosUGens.scx", "DelayUGens.scx",
+                        "DemandUGens.scx", "DiskIOUGens.scx", "DynNoiseUGens.scx",
+                        "FilterUGens.scx", "GendynUGens.scx", "GrainUGens.scx",
+                        "IOUGens.scx", "LFUGens.scx", "libfftw3-3.dll",
+                        "libfftw3f-3.dll", "libfftw3l-3.dll", "libsndfile-1.dll",
+                        "MachineListeningUGens.scx", "MouseUGens.scx", "MulAddUGens.scx",
+                        "NoiseUGens.scx", "OSCUGens.scx", "PanUGens.scx",
+                        "PhysicalModelingUGens.scx", "ReverbUGens.scx", "scsynth.dll",
+                        "TestUGens.scx", "TriggerUGens.scx", "UnaryOpUGens.scx",
+                        "UnpackFFTUGens.scx"};
         } else if (getOsName().equals("macosx")) {
         }
 
-        return null;
+        return new String[]{};
     }
 
-    private static String getScSynthJna() {
+    private static String getScSynth() {
         String retval = "";
         if (getOsName().equals("linux")) {
             retval = "libscsynth_jna.so";
         } else if (getOsName().equals("windows")) {
-            retval = "";
+            retval = "scsynth_jna.dll";
         } else if (getOsName().equals("macosx")) {
             retval = "";
         }
         return retval;
     }
 
-    private static String getScSynthJnaLocation() {
+    private static String getScSynthLocation() {
         return "/supercollider/scsynth/" + getOsName() + "/" + getOsArch();
     }
 
