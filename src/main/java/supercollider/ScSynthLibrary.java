@@ -105,6 +105,6 @@ public class ScSynthLibrary {
             }
         }
 
-        return "/supercollider/" + nname + "/" + narch;
+        return "/supercollider/scsynth/" + nname + "/" + narch;
     }
 }
