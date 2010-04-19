@@ -2,8 +2,8 @@
 # Author: Fabian Aussems
 # mozinator.eu
 
-arch = 'x86_64'
-debug = true
+arch = 'x86'
+debug = false
 
 scsynth_source_files = <<EOF
 ../supercollider/common/source/server/Samp.cpp
@@ -328,16 +328,16 @@ ugens.keys.each do |k|
 end
 
 if arch == 'x86_64'
-  file.puts 'copy /y scsynth_jna.dll src\main\resources\supercollider\windows\x86_64'
-  file.puts 'copy /y *.scx src\main\resources\supercollider\windows\x86_64'
-  file.puts 'copy /y ..\supercollider\windows\lib64\libsndfile\*.dll src\main\resources\supercollider\windows\x86_64'
-  file.puts 'copy /y ..\supercollider\windows\lib64\fftw3\*.dll src\main\resources\supercollider\windows\x86_64'
+  file.puts 'copy /y scsynth_jna.dll src\main\resources\supercollider\scsynth\windows\x86_64'
+  file.puts 'copy /y *.scx src\main\resources\supercollider\scsynth\windows\x86_64'
+  file.puts 'copy /y ..\supercollider\windows\lib64\libsndfile\*.dll src\main\resources\supercollider\scsynth\windows\x86_64'
+  file.puts 'copy /y ..\supercollider\windows\lib64\fftw3\*.dll src\main\resources\supercollider\scsynth\windows\x86_64'
 end
 if arch == 'x86'
-  file.puts 'copy /y scsynth_jna.dll src\main\resources\supercollider\windows\x86'
-  file.puts 'copy /y *.scx src\main\resources\supercollider\windows\x86'
-  file.puts 'copy /y ..\supercollider\windows\lib64\libsndfile\*.dll src\main\resources\supercollider\windows\x86'
-  file.puts 'copy /y ..\supercollider\windows\lib64\fftw3\*.dll src\main\resources\supercollider\windows\x86'
+  file.puts 'copy /y scsynth_jna.dll src\main\resources\supercollider\scsynth\windows\x86'
+  file.puts 'copy /y *.scx src\main\resources\supercollider\scsynth\windows\x86'
+  file.puts 'copy /y ..\supercollider\windows\lib32\libsndfile\*.dll src\main\resources\supercollider\scsynth\windows\x86'
+  file.puts 'copy /y ..\supercollider\windows\lib32\fftw3\*.dll src\main\resources\supercollider\scsynth\windows\x86'
 end
 
 file.close

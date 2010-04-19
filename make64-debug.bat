@@ -151,7 +151,7 @@ link /SUBSYSTEM:WINDOWS /DYNAMICBASE:NO /NXCOMPAT:NO /nologo  /MACHINE:X64  /DEB
 cl /nologo /c ../supercollider/windows/PlugIns/ExportHelper.cpp /ERRORREPORT:PROMPT /W1 /EHsc /D_DEBUG /DDEBUG /MTd /RTC1 /Od /I"../supercollider/common/Headers/common" /I"../supercollider/common/Headers/plugin_interface" /I"../supercollider/common/Headers/server" /I"../pthread-win32" /I"../portaudio/include" /I"../portaudio/src/common" /I"../asio-sdk/common" /I"../asio-sdk/host" /I"../asio-sdk/host/pc" /I"../supercollider/windows/lib32/libsndfile/include" /I"../supercollider/windows/lib32/fftw3" /I"../supercollider/windows/compat_stuff" /I"./include" /DSC_WIN32 /D_WINDOWS /DNOMINMAX /D_USRDLL /D_MBCS /DWIN64 /DDELAYUGENS_EXPORTS 
 cl /nologo /c ../supercollider/common/source/plugins/DelayUGens.cpp /ERRORREPORT:PROMPT /W1 /EHsc /D_DEBUG /DDEBUG /MTd /RTC1 /Od /I"../supercollider/common/Headers/common" /I"../supercollider/common/Headers/plugin_interface" /I"../supercollider/common/Headers/server" /I"../pthread-win32" /I"../portaudio/include" /I"../portaudio/src/common" /I"../asio-sdk/common" /I"../asio-sdk/host" /I"../asio-sdk/host/pc" /I"../supercollider/windows/lib32/libsndfile/include" /I"../supercollider/windows/lib32/fftw3" /I"../supercollider/windows/compat_stuff" /I"./include" /DSC_WIN32 /D_WINDOWS /DNOMINMAX /D_USRDLL /D_MBCS /DWIN64 /DDELAYUGENS_EXPORTS 
 link /SUBSYSTEM:WINDOWS /DYNAMICBASE:NO /NXCOMPAT:NO /nologo  /MACHINE:X64  /DEBUG  /OUT:DelayUGens.scx /DLL ws2_32.lib user32.lib ole32.lib advapi32.lib scsynth_jna.lib ../supercollider/windows/lib64/libsndfile/libsndfile-1.lib ExportHelper.obj DelayUGens.obj 
-copy /y scsynth_jna.dll src\main\resources\supercollider\windows\x86_64
-copy /y *.scx src\main\resources\supercollider\windows\x86_64
-copy /y ..\supercollider\windows\lib64\libsndfile\*.dll src\main\resources\supercollider\windows\x86_64
-copy /y ..\supercollider\windows\lib64\fftw3\*.dll src\main\resources\supercollider\windows\x86_64
+copy /y scsynth_jna.dll src\main\resources\supercollider\scsynth\windows\x86_64
+copy /y *.scx src\main\resources\supercollider\scsynth\windows\x86_64
+copy /y ..\supercollider\windows\lib64\libsndfile\*.dll src\main\resources\supercollider\scsynth\windows\x86_64
+copy /y ..\supercollider\windows\lib64\fftw3\*.dll src\main\resources\supercollider\scsynth\windows\x86_64
