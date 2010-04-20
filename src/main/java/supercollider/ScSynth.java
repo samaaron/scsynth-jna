@@ -29,9 +29,15 @@ public class ScSynth implements Runnable {
             o.UGensPluginPath = ScSynthLibrary.getUgensPath();
             world = ScSynthLibrary.scsynth_jna_start(o);
             running = true;
+            for (ScSynthStartedListener l : startedListeners) {
+                l.scSynthStarted();
+            }
             ScSynthLibrary.World_WaitForQuit(world);
             ScSynthLibrary.scsynth_jna_cleanup();
             running = false;
+            for (ScSynthStoppedListener l : stoppedListeners) {
+                l.scSynthStopped();
+            }
         }
     }
     private ReplyCallback globalReplyCallback = new ReplyCallback() {
@@ -44,14 +50,41 @@ public class ScSynth implements Runnable {
             }
         }
     };
-    ArrayList<MessageReceivedListener> messageListeners;
+    ArrayList<ScSynthStartedListener> startedListeners = new ArrayList<ScSynthStartedListener>();
+    ArrayList<ScSynthStoppedListener> stoppedListeners = new ArrayList<ScSynthStoppedListener>();
+    ArrayList<MessageReceivedListener> messageListeners = new ArrayList<MessageReceivedListener>();
+
+    public void addScSynthStartedListener(ScSynthStartedListener listener) {
+        if (listener == null) {
+            throw new IllegalArgumentException("null listener");
+        }
+        startedListeners.add(listener);
+    }
+
+    public void removeScSynthStartedListener(ScSynthStartedListener listener) {
+        if (listener == null) {
+            throw new IllegalArgumentException("null listener");
+        }
+        startedListeners.remove(listener);
+    }
+
+    public void addScSynthStoppedListener(ScSynthStoppedListener listener) {
+        if (listener == null) {
+            throw new IllegalArgumentException("null listener");
+        }
+        stoppedListeners.add(listener);
+    }
+
+    public void removeScSynthStoppedListener(ScSynthStoppedListener listener) {
+        if (listener == null) {
+            throw new IllegalArgumentException("null listener");
+        }
+        stoppedListeners.remove(listener);
+    }
 
     public void addMessageReceivedListener(MessageReceivedListener listener) {
         if (listener == null) {
             throw new IllegalArgumentException("null listener");
-        }
-        if (messageListeners == null) {
-            messageListeners = new ArrayList<MessageReceivedListener>(1);
         }
         messageListeners.add(listener);
     }
@@ -60,9 +93,7 @@ public class ScSynth implements Runnable {
         if (listener == null) {
             throw new IllegalArgumentException("null listener");
         }
-        if (messageListeners != null) {
-            messageListeners.remove(listener);
-        }
+        messageListeners.remove(listener);
     }
 
     public void send(ByteBuffer b) {
