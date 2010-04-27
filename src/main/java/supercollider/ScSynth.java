@@ -2,6 +2,7 @@ package supercollider;
 
 import com.sun.jna.Pointer;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 
 public class ScSynth implements Runnable {
@@ -41,12 +42,11 @@ public class ScSynth implements Runnable {
         }
     }
     private ReplyCallback globalReplyCallback = new ReplyCallback() {
-
         @Override
         public void callback(Pointer addr, Pointer buf, int size) {
             ByteBuffer b = buf.getByteBuffer(0, size);
             for (MessageReceivedListener l : messageListeners) {
-                l.messageReceived(b, size);
+                l.messageReceived(b.order(ByteOrder.BIG_ENDIAN), size);
             }
         }
     };
