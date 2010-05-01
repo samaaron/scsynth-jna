@@ -47,21 +47,21 @@ env.Append(CPPPATH = ['../supercollider/common/Headers/common',
 env.Append(CPPPATH = ["../supercollider/common/include/nova-simd"])
 
 env.Append(CPPDEFINES={'NOVA_SIMD' : '1',
-                       'SC_LINUX' : '1',
-                       'NDEBUG' : '1',
-		       '_REENTRANT' : '1',
-                       'HAVE_STRTOD' : '1',
-                       'SC_MEMORY_ALIGNMENT' : '8',
-                       'SC_AUDIO_API' : 'SC_AUDIO_API_JACK',
-                       'HAVE_ALSA' : '1'})
+		'SC_LINUX' : '1',
+		'NDEBUG' : '1',
+		'_REENTRANT' : '1',
+		'LIBSNDFILE_1018' : '1',
+		'SC_PLUGIN_EXT' : '\\".so\\"',
+		'SC_PLUGIN_LOAD_SYM' : '\\"load\\"',
+		'SC_PLUGIN_DIR' : '\\"/usr/local/lib/SuperCollider/plugins\\"',
+		'SC_MEMORY_ALIGNMENT' : '1',
+		'SC_JACK_USE_DLL' : 'False',
+		'SC_JACK_DEBUG_DLL' : 'False',
+		'SC_AUDIO_API' : 'SC_AUDIO_API_JACK'})
 
-env.Append(CCFLAGS=["-O3", "-ffast-math", "-fno-finite-math-only", "-fstrength-reduce", "-msse", "-mfpmath=sse", "-msse2"])
-env.Append(LINKFLAGS = '-ljack -lrt -lpthread -ldl -lm -lsndfile -lasound ')
+env.Append(CCFLAGS=["-Wno-unknown-pragmas", "-march=i686", "-O3", "-ffast-math", "-fno-finite-math-only", "-fstrength-reduce"]) #, "-msse", "-mfpmath=sse", "-msse2"
+env.Append(LINKFLAGS = '-ljack -lrt -lpthread -ldl -lm -lsndfile ')
 # END LINUX
 
 env.SharedLibrary(target = "scsynth_jna", source = sourceFiles)
 
-# Test program
-#sourceFiles += ['./src/test.cpp']
-#env.Append(LINKFLAGS = '-Wl,-rpath,../supercollider/build -Wl,-Bdynamic -lscsynth ') 
-#env.Program(target = "sclang-jna-test", source = sourceFiles)
