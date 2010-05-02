@@ -57,8 +57,8 @@ env.Append(CPPDEFINES={'NOVA_SIMD' : '1',
 		'SC_JACK_USE_DLL' : 'False',
 		'SC_JACK_DEBUG_DLL' : 'False',
 		'SC_AUDIO_API' : 'SC_AUDIO_API_JACK'})
-
-env.Append(CCFLAGS=["-Wno-unknown-pragmas", "-march=i686", "-O3", "-ffast-math", "-fno-finite-math-only", "-fstrength-reduce", "-msse", "-mfpmath=sse", "-msse2"])
+# "-march=i686", 
+env.Append(CCFLAGS=["-Wno-unknown-pragmas", "-O3", "-ffast-math", "-fno-finite-math-only", "-fstrength-reduce", "-msse", "-mfpmath=sse", "-msse2"])
 env.Append(LINKFLAGS = '-ljack -lrt -lpthread -ldl -lm -lsndfile ')
 # END LINUX
 
