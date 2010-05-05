@@ -158,12 +158,15 @@ public class ScSynthLibrary {
                         "UnpackFFTUGens.scx"};
         } else if (getOsName().equals("macosx")) {
             return new String[]{
-                        "IOUGens.scx", "OscUGens.scx", "UnaryOpUGens.scx", "DiskIO_UGens.scx", "DynNoiseUGens.scx",
-                        "GrainUGens.scx", "LFUGens.scx", "NoiseUGens.scx", "FFT_UGens.scx", "BinaryOpUGens.scx",
-                        "GendynUGens.scx", "ChaosUGens.scx", "MulAddUGens.scx", "DelayUGens.scx", "PhysicalModelingUGens.scx",
-                        "PV_ThirdParty.scx", "DemandUGens.scx", "PanUGens.scx", "KeyboardUGens.scx", "TriggerUGens.scx",
-                        "TestUGens.scx", "UnpackFFTUGens.scx", "MouseUGens.scx", "ReverbUGens.scx", "FilterUGens.scx",
-                        "ML_UGens.scx"};
+                        "IOUGens.scx", "OscUGens.scx", "UnaryOpUGens.scx",
+                        "DiskIO_UGens.scx", "DynNoiseUGens.scx", "GrainUGens.scx",
+                        "LFUGens.scx", "NoiseUGens.scx", "FFT_UGens.scx",
+                        "BinaryOpUGens.scx", "GendynUGens.scx", "ChaosUGens.scx",
+                        "MulAddUGens.scx", "DelayUGens.scx", "PhysicalModelingUGens.scx",
+                        "PV_ThirdParty.scx", "DemandUGens.scx", "PanUGens.scx",
+                        "KeyboardUGens.scx", "TriggerUGens.scx", "TestUGens.scx",
+                        "UnpackFFTUGens.scx", "MouseUGens.scx", "ReverbUGens.scx",
+                        "FilterUGens.scx", "ML_UGens.scx"};
         }
 
         return new String[]{};
