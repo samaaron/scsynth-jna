@@ -135,7 +135,7 @@ public class ScSynthLibrary {
 
         if (getOsName().equals("linux")) {
             return new String[]{
-                        "BinaryOpUGens.so",
+                        "BinaryOpUGens.so", "KeyboardUGens.so", "MouseUGens.so",
                         "GendynUGens.so", "PanUGens.so",
                         "ChaosUGens.so", "GrainUGens.so", "PhysicalModelingUGens.so",
                         "DelayUGens.so", "IOUGens.so", "PV_ThirdParty.so",
