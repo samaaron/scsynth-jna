@@ -57,7 +57,7 @@ public class ScSynthLibrary {
                 tempDir.mkdir();
             }
             tempDir.deleteOnExit();
-            
+
             File tempUgensDir = new File(tempDir.getPath() + File.separator + "ugens");
             if (tempUgensDir.exists() == false) {
                 tempUgensDir.mkdir();
@@ -88,7 +88,7 @@ public class ScSynthLibrary {
                 File ugen = copyResourceToFS(source, target);
                 ugen.deleteOnExit();
             }
-           
+
 
             scsynthDir = tempDir.getPath();
             ugensDir = tempUgensDir.getPath();
@@ -157,6 +157,13 @@ public class ScSynthLibrary {
                         "TestUGens.scx", "TriggerUGens.scx", "UnaryOpUGens.scx",
                         "UnpackFFTUGens.scx"};
         } else if (getOsName().equals("macosx")) {
+            return new String[]{
+                        "IOUGens.scx", "OscUGens.scx", "UnaryOpUGens.scx", "DiskIO_UGens.scx", "DynNoiseUGens.scx",
+                        "GrainUGens.scx", "LFUGens.scx", "NoiseUGens.scx", "FFT_UGens.scx", "BinaryOpUGens.scx",
+                        "GendynUGens.scx", "ChaosUGens.scx", "MulAddUGens.scx", "DelayUGens.scx", "PhysicalModelingUGens.scx",
+                        "PV_ThirdParty.scx", "DemandUGens.scx", "PanUGens.scx", "KeyboardUGens.scx", "TriggerUGens.scx",
+                        "TestUGens.scx", "UnpackFFTUGens.scx", "MouseUGens.scx", "ReverbUGens.scx", "FilterUGens.scx",
+                        "ML_UGens.scx"};
         }
 
         return new String[]{};
@@ -169,7 +176,7 @@ public class ScSynthLibrary {
         } else if (getOsName().equals("windows")) {
             retval = "scsynth_jna.dll";
         } else if (getOsName().equals("macosx")) {
-            retval = "";
+            retval = "libscsynth_jna.dylib";
         }
         return retval;
     }
