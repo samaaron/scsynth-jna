@@ -41,6 +41,7 @@ sourceFiles = Split("""
 env.Append(CPPPATH = ['../supercollider/common/Headers/common',
                       '../supercollider/common/Headers/plugin_interface', 
                       '../supercollider/common/Headers/server', 
+                      '../supercollider/common/include/libsndfile',
                       './include'])
 
 env.Append(CPPPATH = ["../supercollider/common/include/nova-simd"])
@@ -56,7 +57,7 @@ env.Append(CPPDEFINES={'NOVA_SIMD' : '1',
 		'SC_AUDIO_API' : 'SC_AUDIO_API_COREAUDIO'})
 
 env.Append(CCFLAGS=["-Wno-unknown-pragmas", "-O3", "-ffast-math", "-fno-finite-math-only", "-fstrength-reduce", "-msse", "-mfpmath=sse", "-msse2"])
-env.Append(LINKFLAGS = '-framework CoreServices -framework CoreAudio -framework CoreMIDI -lpthread -ldl -lm -lsndfile ')
+env.Append(LINKFLAGS = '-L ../supercollider/mac/lib -framework CoreServices -framework CoreAudio -framework CoreMIDI -lpthread -ldl -lm -lsndfile ')
 
 env.SharedLibrary(target = "scsynth_jna", source = sourceFiles)
 
