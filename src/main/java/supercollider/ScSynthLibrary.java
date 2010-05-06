@@ -56,13 +56,13 @@ public class ScSynthLibrary {
             if (tempDir.exists() == false) {
                 tempDir.mkdir();
             }
-//            tempDir.deleteOnExit();
+            tempDir.deleteOnExit();
 
             File tempUgensDir = new File(tempDir.getPath() + File.separator + "ugens");
             if (tempUgensDir.exists() == false) {
                 tempUgensDir.mkdir();
             }
-//            tempUgensDir.deleteOnExit();
+            tempUgensDir.deleteOnExit();
 
             // Copy scsynth to temp dir
             {
@@ -70,7 +70,7 @@ public class ScSynthLibrary {
                 String source = ScSynthLibrary.getScSynthLocation() + "/" + fn;
                 String target = tempDir.getPath() + File.separator + fn;
                 File lib = copyResourceToFS(source, target);
-  //              lib.deleteOnExit();
+                lib.deleteOnExit();
             }
 
             // Copy scsynth dependencies to temp dir
@@ -78,7 +78,7 @@ public class ScSynthLibrary {
                 String source = ScSynthLibrary.getScSynthLocation() + "/" + fn;
                 String target = tempDir.getPath() + File.separator + fn;
                 File lib = copyResourceToFS(source, target);
-    //            lib.deleteOnExit();
+                lib.deleteOnExit();
             }
 
             // Copy ugens to temp dir
@@ -86,7 +86,7 @@ public class ScSynthLibrary {
                 String source = ScSynthLibrary.getUgensLocation() + "/" + fn;
                 String target = tempUgensDir.getPath() + File.separator + fn;
                 File ugen = copyResourceToFS(source, target);
-      //          ugen.deleteOnExit();
+                ugen.deleteOnExit();
             }
 
 
