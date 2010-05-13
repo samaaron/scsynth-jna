@@ -1,6 +1,5 @@
 target
 *.obj
-scsynth_jna.dll
 scsynth_jna.exp
 scsynth_jna.lib
 src/scsynth-jna.os
