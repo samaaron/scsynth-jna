@@ -53,7 +53,7 @@ int scsynth_jna_get_device_max_input_channels(int i)
 
 const char* scsynth_jna_get_device_name(int i)
 {
-	char retval[256];
+	char * retval = (char*)malloc(256*sizeof(char));
 	#if SC_AUDIO_API == SC_AUDIO_API_PORTAUDIO
 	const PaDeviceInfo *pdi;
 	const PaHostApiInfo *apiInfo;
@@ -78,19 +78,19 @@ int scsynth_jna_get_device_count()
 ScsynthJnaStartOptions* scsynth_jna_get_default_start_options()
 {
   struct ScsynthJnaStartOptions *options = (struct ScsynthJnaStartOptions*)malloc(sizeof(struct ScsynthJnaStartOptions));
-  options.numControlBusChannels =               kDefaultWorldOptions.mNumControlBusChannels;       
-  options.numAudioBusChannels =                 kDefaultWorldOptions.mNumAudioBusChannels;
-  options.numInputBusChannels =                 kDefaultWorldOptions.mNumInputBusChannels;
-  options.numOutputBusChannels =                kDefaultWorldOptions.mNumOutputBusChannels;
-  options.bufLength =                           kDefaultWorldOptions.mBufLength;
-  options.preferredHardwareBufferFrameSize =    kDefaultWorldOptions.mPreferredHardwareBufferFrameSize;
-  options.preferredSampleRate =                 kDefaultWorldOptions.mPreferredSampleRate;
-  options.numBuffers =                          kDefaultWorldOptions.mNumBuffers;
-  options.maxNodes =                            kDefaultWorldOptions.mMaxNodes;
-  options.maxGraphDefs =                        kDefaultWorldOptions.mMaxGraphDefs;
-  options.realTimeMemorySize =                  kDefaultWorldOptions.mRealTimeMemorySize;
-  options.maxWireBufs =                         kDefaultWorldOptions.mMaxWireBufs;
-  options.numRGens =                            kDefaultWorldOptions.mNumRGens;
+  options->numControlBusChannels =               kDefaultWorldOptions.mNumControlBusChannels;       
+  options->numAudioBusChannels =                 kDefaultWorldOptions.mNumAudioBusChannels;
+  options->numInputBusChannels =                 kDefaultWorldOptions.mNumInputBusChannels;
+  options->numOutputBusChannels =                kDefaultWorldOptions.mNumOutputBusChannels;
+  options->bufLength =                           kDefaultWorldOptions.mBufLength;
+  options->preferredHardwareBufferFrameSize =    kDefaultWorldOptions.mPreferredHardwareBufferFrameSize;
+  options->preferredSampleRate =                 kDefaultWorldOptions.mPreferredSampleRate;
+  options->numBuffers =                          kDefaultWorldOptions.mNumBuffers;
+  options->maxNodes =                            kDefaultWorldOptions.mMaxNodes;
+  options->maxGraphDefs =                        kDefaultWorldOptions.mMaxGraphDefs;
+  options->realTimeMemorySize =                  kDefaultWorldOptions.mRealTimeMemorySize;
+  options->maxWireBufs =                         kDefaultWorldOptions.mMaxWireBufs;
+  options->numRGens =                            kDefaultWorldOptions.mNumRGens;
   return options;
 }
 
