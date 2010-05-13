@@ -100,6 +100,18 @@ public class ScSynthLibrary {
         }
     }
 
+    public static native ScsynthJnaStartOptions.ByReference scsynth_jna_get_default_start_options();
+
+    public static native int scsynth_jna_get_device_count();
+
+    public static native String scsynth_jna_get_device_name(int i);
+
+    public static native int scsynth_jna_get_device_max_input_channels(int i);
+
+    public static native int scsynth_jna_get_device_max_output_channels(int i);
+
+    
+
     public static native int scsynth_jna_init();
 
     public static native void scsynth_jna_cleanup();

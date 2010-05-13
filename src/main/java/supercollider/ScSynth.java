@@ -111,6 +111,10 @@ public class ScSynth implements Runnable {
     }
 
     public static void main(String[] args) {
+        ScsynthJnaStartOptions.ByReference retval = ScSynthLibrary.scsynth_jna_get_default_start_options();
+        int count = ScSynthLibrary.scsynth_jna_get_device_count();
+        //int nrc = ScSynthLibrary.scsynth_jna_get_device_max_input_channels(0);
+        System.out.println("Nr devices: " + count);
         ScSynth sc = new ScSynth();
         (new Thread(sc)).start();
     }

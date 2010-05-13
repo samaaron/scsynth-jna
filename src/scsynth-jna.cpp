@@ -78,6 +78,7 @@ int scsynth_jna_get_device_count()
 ScsynthJnaStartOptions* scsynth_jna_get_default_start_options()
 {
   struct ScsynthJnaStartOptions *options = (struct ScsynthJnaStartOptions*)malloc(sizeof(struct ScsynthJnaStartOptions));
+	memset(options, 0, sizeof(struct ScsynthJnaStartOptions));
   options->numControlBusChannels =               kDefaultWorldOptions.mNumControlBusChannels;       
   options->numAudioBusChannels =                 kDefaultWorldOptions.mNumAudioBusChannels;
   options->numInputBusChannels =                 kDefaultWorldOptions.mNumInputBusChannels;

@@ -22,19 +22,19 @@ struct ScsynthJnaStartOptions
   const char* UGensPluginPath;
   const char* inDeviceName;
   const char* outDeviceName;
-  int32 numControlBusChannels;
-  int32 numAudioBusChannels;
-  int32 numInputBusChannels;
-  int32 numOutputBusChannels;
-  int32 bufLength;
-  int32 preferredHardwareBufferFrameSize;
-  int32 preferredSampleRate;
-  int32 numBuffers;
-  int32 maxNodes;
-  int32 maxGraphDefs;
-  int32 realTimeMemorySize;
-  int32 maxWireBufs;
-  int32 numRGens;
+  uint32 numControlBusChannels;
+  uint32 numAudioBusChannels;
+  uint32 numInputBusChannels;
+  uint32 numOutputBusChannels;
+  uint32 bufLength;
+  uint32 preferredHardwareBufferFrameSize;
+  uint32 preferredSampleRate;
+  uint32 numBuffers;
+  uint32 maxNodes;
+  uint32 maxGraphDefs;
+  uint32 realTimeMemorySize;
+  uint32 maxWireBufs;
+  uint32 numRGens;
 };
 
 extern "C" {
