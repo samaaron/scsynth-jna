@@ -1,3 +1,4 @@
+#include "SC_CoreAudio.h"
 #include "SC_WorldOptions.h"
 #include "scsynth-jna.h"
 
@@ -24,8 +25,75 @@ inline int setlinebuf(FILE *stream)
 {
     return setvbuf( stream, (char*)0, _IONBF, 0 );
 }
-
 #endif
+
+int scsynth_jna_get_device_max_output_channels(int i)
+{
+	int retval = 0;
+	#if SC_AUDIO_API == SC_AUDIO_API_PORTAUDIO
+	const PaDeviceInfo *pdi;
+	const PaHostApiInfo *apiInfo;
+	pdi = Pa_GetDeviceInfo( i );
+	retval = pdi->maxOutputChannels;
+	#endif
+	return retval;
+}
+
+int scsynth_jna_get_device_max_input_channels(int i)
+{
+	int retval = 0;
+	#if SC_AUDIO_API == SC_AUDIO_API_PORTAUDIO
+	const PaDeviceInfo *pdi;
+	const PaHostApiInfo *apiInfo;
+	pdi = Pa_GetDeviceInfo( i );
+	retval = pdi->maxInputChannels;
+	#endif
+	return retval;
+}
+
+const char* scsynth_jna_get_device_name(int i)
+{
+	char retval[256];
+	#if SC_AUDIO_API == SC_AUDIO_API_PORTAUDIO
+	const PaDeviceInfo *pdi;
+	const PaHostApiInfo *apiInfo;
+	pdi = Pa_GetDeviceInfo( i );
+	apiInfo = Pa_GetHostApiInfo(pdi->hostApi);
+	strcpy(retval, apiInfo->name);
+	strcat(retval, " : ");
+	strcat(retval, pdi->name);
+	#endif
+	return retval;
+}
+
+int scsynth_jna_get_device_count()
+{
+	int retval = 0;
+	#if SC_AUDIO_API == SC_AUDIO_API_PORTAUDIO
+	retval = Pa_GetDeviceCount();
+	#endif
+	return retval;
+}
+
+ScsynthJnaStartOptions* scsynth_jna_get_default_start_options()
+{
+  struct ScsynthJnaStartOptions *options = (struct ScsynthJnaStartOptions*)malloc(sizeof(struct ScsynthJnaStartOptions));
+  options.numControlBusChannels =               kDefaultWorldOptions.mNumControlBusChannels;       
+  options.numAudioBusChannels =                 kDefaultWorldOptions.mNumAudioBusChannels;
+  options.numInputBusChannels =                 kDefaultWorldOptions.mNumInputBusChannels;
+  options.numOutputBusChannels =                kDefaultWorldOptions.mNumOutputBusChannels;
+  options.bufLength =                           kDefaultWorldOptions.mBufLength;
+  options.preferredHardwareBufferFrameSize =    kDefaultWorldOptions.mPreferredHardwareBufferFrameSize;
+  options.preferredSampleRate =                 kDefaultWorldOptions.mPreferredSampleRate;
+  options.numBuffers =                          kDefaultWorldOptions.mNumBuffers;
+  options.maxNodes =                            kDefaultWorldOptions.mMaxNodes;
+  options.maxGraphDefs =                        kDefaultWorldOptions.mMaxGraphDefs;
+  options.realTimeMemorySize =                  kDefaultWorldOptions.mRealTimeMemorySize;
+  options.maxWireBufs =                         kDefaultWorldOptions.mMaxWireBufs;
+  options.numRGens =                            kDefaultWorldOptions.mNumRGens;
+  return options;
+}
+
 
 struct SndBuf * scsynth_jna_copy_sndbuf(World *world, uint32 index)
 {
@@ -60,21 +128,67 @@ World* scsynth_jna_start(ScsynthJnaStartOptions *inOptions)
 {
     setlinebuf(stdout);
 
-	WorldOptions options = kDefaultWorldOptions;
-	
-	options.mVerbosity = inOptions->verbosity;
-  options.mUGensPluginPath = inOptions->UGensPluginPath;
+    WorldOptions options = kDefaultWorldOptions;
 
-	struct World *world = World_New(&options);
-	if (!world) return 0;
-	
-	if(options.mVerbosity >=0){
-		scprintf("SuperCollider 3 server ready..\n");
-	}
-  
-	fflush(stdout);
-	
-	return world;
+    if( -1 != inOptions->numControlBusChannels) {
+	    options.mNumControlBusChannels = inOptions->numControlBusChannels;
+    }
+    if( -1 != inOptions->numAudioBusChannels) {
+	    options.mNumAudioBusChannels = inOptions->numAudioBusChannels;
+    }
+    if( -1 != inOptions->numInputBusChannels) { 
+	    options.mNumInputBusChannels= inOptions->numInputBusChannels;
+    }
+    if( -1 != inOptions->numOutputBusChannels) { 
+	    options.mNumOutputBusChannels = inOptions->numOutputBusChannels;
+    }
+    if( -1 != inOptions->bufLength) { 
+	    options.mBufLength = inOptions->bufLength;
+    }
+    if( -1 != inOptions->preferredHardwareBufferFrameSize) { 
+	    options.mPreferredHardwareBufferFrameSize = inOptions->preferredHardwareBufferFrameSize;
+    }
+    if( -1 != inOptions->preferredSampleRate) {
+	    options.mPreferredSampleRate = inOptions->preferredSampleRate;
+    }
+    if( -1 != inOptions->numBuffers) { 
+	    options.mNumBuffers = inOptions->numBuffers;
+    }
+    if( -1 != inOptions->maxNodes) { 
+	    options.mMaxNodes = inOptions->maxNodes;
+    }
+    if( -1 != inOptions->maxGraphDefs) { 
+	    options.mMaxGraphDefs = inOptions->maxGraphDefs;
+    }
+    if( -1 != inOptions->realTimeMemorySize) { 
+	    options.mRealTimeMemorySize = inOptions->realTimeMemorySize;
+    }
+    if( -1 != inOptions->maxWireBufs) { 
+	    options.mMaxWireBufs = inOptions->maxWireBufs;
+    }
+    if( -1 != inOptions->numRGens) { 
+	    options.mNumRGens = inOptions->numRGens;
+    }
+    if( 0 != strcmp("", inOptions->inDeviceName )) { // not empty
+	    options.mInDeviceName = inOptions->inDeviceName;
+    }
+    if( 0 != strcmp("", inOptions->outDeviceName )) { // not empty
+	    options.mOutDeviceName = inOptions->outDeviceName;
+    }
+
+    options.mVerbosity = inOptions->verbosity;
+    options.mUGensPluginPath = inOptions->UGensPluginPath;
+
+    struct World *world = World_New(&options);
+    if (!world) return 0;
+
+    if(options.mVerbosity >=0){
+	    scprintf("SuperCollider 3 server ready..\n");
+    }
+
+    fflush(stdout);
+
+    return world;
 }
 
 void scsynth_jna_cleanup()
