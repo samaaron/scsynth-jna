@@ -8,24 +8,20 @@ FIXME: write
 
 ## Maven
 
-<pre>
-`
-<repository>
-  <id>clojars.org</id>
-  <url>http://clojars.org/repo</url>
-</repository>
-`
-</pre>
+Repository:
 
-<pre>
-`
-<dependency>
-  <groupId>overtone</groupId>
-  <artifactId>scsynth-jna</artifactId>
-  <version>0.1.1-SNAPSHOT</version>
-</dependency>
-`
-</pre>
+    <repository>
+      <id>clojars.org</id>
+      <url>http://clojars.org/repo</url>
+    </repository>
+
+Dependency:
+
+    <dependency>
+      <groupId>overtone</groupId>
+      <artifactId>scsynth-jna</artifactId>
+      <version>0.1.1-SNAPSHOT</version>
+    </dependency>
 
 ## Installation
 
