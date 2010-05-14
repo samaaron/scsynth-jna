@@ -4,6 +4,7 @@ import com.sun.jna.Pointer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
+import javax.swing.JFrame;
 
 public class ScSynth implements Runnable {
 
@@ -21,14 +22,19 @@ public class ScSynth implements Runnable {
         }
     }
     boolean running = false;
+    ScsynthJnaStartOptions.ByReference options = new ScsynthJnaStartOptions.ByReference();
+
+    public ScsynthJnaStartOptions.ByReference getOptions() {
+        return options;
+    }
 
     @Override
     public void run() {
         if (!running) {
             ScSynthLibrary.scsynth_jna_init();
-            ScsynthJnaStartOptions.ByReference o = new ScsynthJnaStartOptions.ByReference();
-            o.UGensPluginPath = ScSynthLibrary.getUgensPath();
-            world = ScSynthLibrary.scsynth_jna_start(o);
+
+            options.UGensPluginPath = ScSynthLibrary.getUgensPath();
+            world = ScSynthLibrary.scsynth_jna_start(options);
             running = true;
             for (ScSynthStartedListener l : startedListeners) {
                 l.scSynthStarted();
@@ -42,6 +48,7 @@ public class ScSynth implements Runnable {
         }
     }
     private ReplyCallback globalReplyCallback = new ReplyCallback() {
+
         @Override
         public void callback(Pointer addr, Pointer buf, int size) {
             ByteBuffer b = buf.getByteBuffer(0, size);
@@ -111,11 +118,14 @@ public class ScSynth implements Runnable {
     }
 
     public static void main(String[] args) {
-        ScsynthJnaStartOptions.ByReference retval = ScSynthLibrary.scsynth_jna_get_default_start_options();
-        int count = ScSynthLibrary.scsynth_jna_get_device_count();
-        //int nrc = ScSynthLibrary.scsynth_jna_get_device_max_input_channels(0);
-        System.out.println("Nr devices: " + count);
-        ScSynth sc = new ScSynth();
-        (new Thread(sc)).start();
+//        ScsynthJnaStartOptions.ByReference retval = ScSynthLibrary.scsynth_jna_get_default_start_options();
+//        int count = ScSynthLibrary.scsynth_jna_get_device_count();
+//        //int nrc = ScSynthLibrary.scsynth_jna_get_device_max_input_channels(0);
+//        System.out.println("Nr devices: " + count);
+//        ScSynth sc = new ScSynth();
+//        (new Thread(sc)).start();
+        ScSynthSetup s = new ScSynthSetup();
+        s.setVisible(true);
+        s.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 }

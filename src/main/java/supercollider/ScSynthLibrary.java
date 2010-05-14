@@ -109,7 +109,6 @@ public class ScSynthLibrary {
     public static native int scsynth_jna_get_device_max_input_channels(int i);
 
     public static native int scsynth_jna_get_device_max_output_channels(int i);
-
     
 
     public static native int scsynth_jna_init();
@@ -137,7 +136,7 @@ public class ScSynthLibrary {
     }
 
     private static String[] getScSynthDependencies() {
-        if (getOsName().equals("windows")) {
+        if (Util.getOsName().equals("windows")) {
             return new String[]{"libsndfile-1.dll"};
         }
         return new String[]{};
@@ -145,7 +144,7 @@ public class ScSynthLibrary {
 
     private static String[] getUgens() {
 
-        if (getOsName().equals("linux")) {
+        if (Util.getOsName().equals("linux")) {
             return new String[]{
                         "BinaryOpUGens.so", "KeyboardUGens.so", "MouseUGens.so",
                         "GendynUGens.so", "PanUGens.so",
@@ -156,7 +155,7 @@ public class ScSynthLibrary {
                         "DynNoiseUGens.so", "MulAddUGens.so", "TriggerUGens.so",
                         "FFT_UGens.so", "NoiseUGens.so", "UnaryOpUGens.so",
                         "FilterUGens.so", "OscUGens.so", "UnpackFFTUGens.so"};
-        } else if (getOsName().equals("windows")) {
+        } else if (Util.getOsName().equals("windows")) {
             return new String[]{
                         "BinaryOpUGens.scx", "ChaosUGens.scx", "DelayUGens.scx",
                         "DemandUGens.scx", "DiskIOUGens.scx", "DynNoiseUGens.scx",
@@ -168,7 +167,7 @@ public class ScSynthLibrary {
                         "PhysicalModelingUGens.scx", "ReverbUGens.scx", "scsynth.dll",
                         "TestUGens.scx", "TriggerUGens.scx", "UnaryOpUGens.scx",
                         "UnpackFFTUGens.scx"};
-        } else if (getOsName().equals("macosx")) {
+        } else if (Util.getOsName().equals("macosx")) {
             return new String[]{
                         "IOUGens.scx", "OscUGens.scx", "UnaryOpUGens.scx",
                         "DiskIO_UGens.scx", "DynNoiseUGens.scx", "GrainUGens.scx",
@@ -186,56 +185,18 @@ public class ScSynthLibrary {
 
     private static String getScSynth() {
         String retval = "";
-        if (getOsName().equals("linux")) {
+        if (Util.getOsName().equals("linux")) {
             retval = "libscsynth_jna.so";
-        } else if (getOsName().equals("windows")) {
+        } else if (Util.getOsName().equals("windows")) {
             retval = "scsynth_jna.dll";
-        } else if (getOsName().equals("macosx")) {
+        } else if (Util.getOsName().equals("macosx")) {
             retval = "libscsynth_jna.dylib";
         }
         return retval;
     }
 
     private static String getScSynthLocation() {
-        return "/supercollider/scsynth/" + getOsName() + "/" + getOsArch();
+        return "/supercollider/scsynth/" + Util.getOsName() + "/" + Util.getOsArch();
     }
 
-    private static String getOsName() {
-        HashMap<String, String> nativeNames = new HashMap<String, String>();
-        nativeNames.put("Mac OS X", "macosx");
-        nativeNames.put("Windows", "windows");
-        nativeNames.put("Linux", "linux");
-
-        String name = System.getProperty("os.name");
-
-        String nname = "";
-        for (String key : nativeNames.keySet()) {
-            if (name.indexOf(key) >= 0) {
-                nname = nativeNames.get(key);
-                break;
-            }
-        }
-
-        return nname;
-    }
-
-    private static String getOsArch() {
-        HashMap<String, String> nativeNames = new HashMap<String, String>();
-        nativeNames.put("amd64", "x86_64");
-        nativeNames.put("x86_64", "x86_64");
-        nativeNames.put("x86", "x86");
-        nativeNames.put("i386", "x86");
-
-        String arch = System.getProperty("os.arch");
-
-        String narch = "";
-        for (String key : nativeNames.keySet()) {
-            if (arch.indexOf(key) >= 0) {
-                narch = nativeNames.get(key);
-                break;
-            }
-        }
-
-        return narch;
-    }
 }
