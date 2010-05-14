@@ -3,7 +3,7 @@
 # mozinator.eu
 
 arch = 'x86_64'
-debug = true
+debug = false
 
 scsynth_source_files = <<EOF
 ../supercollider/common/source/server/samp.cpp
@@ -74,8 +74,8 @@ header_dirs = <<EOF
 ../asio-sdk/common
 ../asio-sdk/host
 ../asio-sdk/host/pc
-../supercollider/windows/lib32/libsndfile/include
-../supercollider/windows/lib32/fftw3
+../libsndfile/win32/include
+../fftw3/win32
 ../supercollider/windows/compat_stuff
 ./include
 EOF
@@ -91,8 +91,8 @@ scsynth_link_opts += " /MACHINE:X86 " if arch == 'x86'
 scsynth_link_opts += " /MACHINE:X64 " if arch == 'x86_64'
 
 scsynth_libs = ['ws2_32.lib', 'user32.lib', 'ole32.lib', 'advapi32.lib', 'wsock32.lib' ]
-scsynth_libs << '../supercollider/windows/lib64/libsndfile/libsndfile-1.lib' if arch == 'x86_64'
-scsynth_libs << '../supercollider/windows/lib32/libsndfile/libsndfile-1.lib' if arch == 'x86'
+scsynth_libs << '../libsndfile/win64/libsndfile-1.lib' if arch == 'x86_64'
+scsynth_libs << '../libsndfile/win32/libsndfile-1.lib' if arch == 'x86'
 
 scsynth_defines = []
 scsynth_defines << '_CONSOLE'
