@@ -8,13 +8,16 @@ FIXME: write
 
 ## Maven
 
+<pre>
 `
 <repository>
   <id>clojars.org</id>
   <url>http://clojars.org/repo</url>
 </repository>
 `
+</pre>
 
+<pre>
 `
 <dependency>
   <groupId>overtone</groupId>
@@ -22,6 +25,7 @@ FIXME: write
   <version>0.1.1-SNAPSHOT</version>
 </dependency>
 `
+</pre>
 
 ## Installation
 
