@@ -6,6 +6,23 @@ FIXME: write description
 
 FIXME: write
 
+## Maven
+
+<pre>
+<repository>
+  <id>clojars.org</id>
+  <url>http://clojars.org/repo</url>
+</repository>
+</pre>
+
+<pre>
+<dependency>
+  <groupId>overtone</groupId>
+  <artifactId>scsynth-jna</artifactId>
+  <version>0.1.1-SNAPSHOT</version>
+</dependency>
+</pre>
+
 ## Installation
 
 FIXME: write
