@@ -2,7 +2,7 @@
 # Author: Fabian Aussems
 # mozinator.eu
 
-arch = 'x86'
+arch = 'x86_64'
 debug = true
 
 scsynth_source_files = <<EOF
@@ -123,8 +123,6 @@ file.puts "link " + scsynth_link_opts.gsub(/CONSOLE/,'WINDOWS') + "/DLL /OUT:scs
 
 
 if arch == 'x86_64' && debug == false
-  file.puts 'del /q src\main\resources\supercollider\scsynth\windows\x86_64\*.*'
-  file.puts 'del /q src\main\resources\supercollider\scsynth\windows\x86_64\ugens\*.*'
   file.puts 'copy /y scsynth_jna.dll src\main\resources\supercollider\scsynth\windows\x86_64'
   file.puts 'copy /y ..\supercollider\windows\scsynth-x86_64-release\libsndfile-1.dll src\main\resources\supercollider\scsynth\windows\x86_64'  
   
@@ -134,8 +132,6 @@ if arch == 'x86_64' && debug == false
 end
 
 if arch == 'x86_64' && debug == true
-  file.puts 'del /q src\main\resources\supercollider\scsynth\windows\x86_64\*.*'
-  file.puts 'del /q src\main\resources\supercollider\scsynth\windows\x86_64\ugens\*.*'  
   file.puts 'copy /y scsynth_jna.dll src\main\resources\supercollider\scsynth\windows\x86_64'
   file.puts 'copy /y ..\supercollider\windows\scsynth-x86_64-debug\libsndfile-1.dll src\main\resources\supercollider\scsynth\windows\x86_64'  
   
@@ -145,8 +141,6 @@ if arch == 'x86_64' && debug == true
 end
 
 if arch == 'x86' && debug == false
-  file.puts 'del /q src\main\resources\supercollider\scsynth\windows\x86\*.*'
-  file.puts 'del /q src\main\resources\supercollider\scsynth\windows\x86\ugens\*.*'  
   file.puts 'copy /y scsynth_jna.dll src\main\resources\supercollider\scsynth\windows\x86'
   file.puts 'copy /y ..\supercollider\windows\scsynth-x86-release\libsndfile-1.dll src\main\resources\supercollider\scsynth\windows\x86'  
   
@@ -156,8 +150,6 @@ if arch == 'x86' && debug == false
 end
 
 if arch == 'x86' && debug == true
-  file.puts 'del /q src\main\resources\supercollider\scsynth\windows\x86\*.*'
-  file.puts 'del /q src\main\resources\supercollider\scsynth\windows\x86\ugens\*.*'    
   file.puts 'copy /y scsynth_jna.dll src\main\resources\supercollider\scsynth\windows\x86'
   file.puts 'copy /y ..\supercollider\windows\scsynth-x86-debug\libsndfile-1.dll src\main\resources\supercollider\scsynth\windows\x86'  
   
