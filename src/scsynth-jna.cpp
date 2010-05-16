@@ -36,6 +36,9 @@ int scsynth_jna_get_device_max_output_channels(int i)
 	pdi = Pa_GetDeviceInfo( i );
 	retval = pdi->maxOutputChannels;
 	#endif
+	#if SC_AUDIO_API == SC_AUDIO_API_COREAUDIO
+	
+	#endif
 	return retval;
 }
 
@@ -47,6 +50,9 @@ int scsynth_jna_get_device_max_input_channels(int i)
 	const PaHostApiInfo *apiInfo;
 	pdi = Pa_GetDeviceInfo( i );
 	retval = pdi->maxInputChannels;
+	#endif
+	#if SC_AUDIO_API == SC_AUDIO_API_COREAUDIO
+	
 	#endif
 	return retval;
 }
@@ -63,6 +69,35 @@ const char* scsynth_jna_get_device_name(int i)
 	strcat(retval, " : ");
 	strcat(retval, pdi->name);
 	#endif
+	#if SC_AUDIO_API == SC_AUDIO_API_COREAUDIO
+	UInt32	count;
+	OSStatus	err = kAudioHardwareNoError;
+	do {
+		err = AudioHardwareGetPropertyInfo(kAudioHardwarePropertyDevices, &count, 0);
+
+		AudioDeviceID *devices = (AudioDeviceID*)malloc(count);
+		err = AudioHardwareGetProperty(kAudioHardwarePropertyDevices, &count, devices);
+		if (err != kAudioHardwareNoError) {
+			scprintf("get kAudioHardwarePropertyDevices error %4.4s\n", (char*)&err);
+			free(devices);
+			break;
+		}
+		err = AudioDeviceGetPropertyInfo(devices[i], 0, false, kAudioDevicePropertyDeviceName, &count, 0);
+		if (err != kAudioHardwareNoError) {
+			scprintf("info kAudioDevicePropertyDeviceName error %4.4s A %d %08X\n", (char*)&err, i, devices[i]);
+			break;
+		}
+		char *name = (char*)malloc(count);
+		err = AudioDeviceGetProperty(devices[i], 0, false, kAudioDevicePropertyDeviceName, &count, name);
+		if (err != kAudioHardwareNoError) {
+			scprintf("get kAudioDevicePropertyDeviceName error %4.4s A %d %08X\n", (char*)&err, i, devices[i]);
+			free(name);
+			break;
+		}
+		strcpy(retval, name);
+		free(name);
+	} while(false);	
+	#endif
 	return retval;
 }
 
@@ -71,6 +106,23 @@ int scsynth_jna_get_device_count()
 	int retval = 0;
 	#if SC_AUDIO_API == SC_AUDIO_API_PORTAUDIO
 	retval = Pa_GetDeviceCount();
+	#endif
+	#if SC_AUDIO_API == SC_AUDIO_API_COREAUDIO
+	UInt32	count;
+	OSStatus	err = kAudioHardwareNoError;
+	do {	
+		err = AudioHardwareGetPropertyInfo(kAudioHardwarePropertyDevices, &count, 0);
+
+		AudioDeviceID *devices = (AudioDeviceID*)malloc(count);
+		err = AudioHardwareGetProperty(kAudioHardwarePropertyDevices, &count, devices);
+		if (err != kAudioHardwareNoError) {
+			scprintf("get kAudioHardwarePropertyDevices error %4.4s\n", (char*)&err);
+			free(devices);
+			break;
+		}
+
+		retval = count / sizeof(AudioDeviceID);
+	} while(false);
 	#endif
 	return retval;
 }
